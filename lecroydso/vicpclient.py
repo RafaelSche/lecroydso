@@ -113,8 +113,8 @@ class VICPClient():
         """Disconnect the VICP connection
         """
         if self.sock is not None:
-            self.sock.close()
             self.sock.shutdown(socket.SHUT_RDWR)
+            self.sock.close()
             self.sock = None
 
     def send_small_data_and_header(self, data: bytes) -> bool:
