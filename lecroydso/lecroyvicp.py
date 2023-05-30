@@ -116,23 +116,28 @@ class LeCroyVICP(DSOConnection):
             self.wait_opc()
         return success
 
-    def read(self, max_bytes: int) -> str:
+    def read(self, max_bytes: int, decode: bool = True) -> str:
         """reads string from the instrument
 
         Args:
             max_bytes (int): maximum amount of characters to read. If more characters are available it will remain unread
+            decode (bool):
 
         Returns:
             str: description
         """
-        return (self.vicp.receive()).decode('utf-8').strip(' \t\r\n')
+        if decode:
+            return (self.vicp.receive()).decode('utf-8').strip(' \t\r\n')
+        else:
+            return self.vicp.receive()
 
-    def query(self, message: str, query_delay: float = None) -> str:
+    def query(self, message: str, query_delay: float = None, decode: bool = True) -> str:
         """Send the query and returns the response
 
         Args:
             message (string): command to send
             query_delay (float, optional): description. Defaults to None.
+            decode (bool):
 
         Returns:
             string: description
@@ -140,7 +145,7 @@ class LeCroyVICP(DSOConnection):
         if self.write(message, True):
             if query_delay is not None:
                 time.sleep(query_delay)
-            response = self.read(self._query_response_max_length)
+            response = self.read(self._query_response_max_length, decode=decode)
             if self._insert_wait_opc:
                 self.wait_opc()
         else:
